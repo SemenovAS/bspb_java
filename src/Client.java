@@ -58,8 +58,8 @@ public class Client {
         Client[] clients = new Client[countClients];
         for (int i = 0; i < clients.length; i++) {
             Client client = new Client();
-            client.setLastName("LastName " + i);
-            client.setFirstName("FirstName " + i);
+            client.setLastName("LastName" + i);
+            client.setFirstName("FirstName" + i);
             client.setMiddleName("MiddleName" + i);
             client.setSex(Sex.values()[random.nextInt(Sex.values().length)]);
             int age = random.nextInt(max - min + 1) + min;
@@ -86,11 +86,10 @@ public class Client {
 
     public static Client[] filterClientsBySex(Client[] clients, Sex sex) {
         Client[] filteredClient = new Client[0];
-        for (int i = 0; i < clients.length; i++) {
-            if (clients[i].getSex().equals(sex)) {
-                Client client = clients[i];
+        for (Client value : clients) {
+            if (value.getSex().equals(sex)) {
                 filteredClient = Arrays.copyOf(filteredClient, filteredClient.length + 1);
-                filteredClient[filteredClient.length - 1] = client;
+                filteredClient[filteredClient.length - 1] = value;
             }
         }
 
@@ -102,5 +101,4 @@ public class Client {
         FEMALE
     }
 
-    ;
 }
