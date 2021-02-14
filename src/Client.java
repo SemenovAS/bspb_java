@@ -71,15 +71,15 @@ public class Client {
     }
 
     public static Client[] sortClientsByAge(Client[] clients) {
-            for (int i = clients.length - 1; i > 0; i--) {
-                for (int j = 0; j < i; j++) {
-                    if (clients[j].getAge() > clients[j + 1].getAge()) {
-                        Client tmpClient = clients[j];
-                        clients[j] = clients[j + 1];
-                        clients[j + 1] = tmpClient;
-                    }
+        for (int i = clients.length - 1; i > 0; i--) {
+            for (int j = 0; j < i; j++) {
+                if (clients[j].getAge() > clients[j + 1].getAge()) {
+                    Client tmpClient = clients[j];
+                    clients[j] = clients[j + 1];
+                    clients[j + 1] = tmpClient;
                 }
             }
+        }
 
         return clients;
     }
