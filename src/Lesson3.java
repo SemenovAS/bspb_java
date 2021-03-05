@@ -2,28 +2,30 @@ import client.*;
 
 public class Lesson3 {
 
-    public static IndividualClientActions individualClientActions = new IndividualClientActionsImpl();
+    public static ClientUtils clientUtils = new ClientUtils();
+    public static Class<?> individualClient = IndividualClient.class;
+
 
     public static void main(String[] args) {
         int cntClients = 10;
 
-        Client[] clients = new IndividualClient().fillClientsArray(Client.TypeClient.INDIVIDUAL, cntClients);
+        Client[] clients = clientUtils.fillClientsArray(individualClient, cntClients);
 
         System.out.println("\nБез сортировки и фильтрации:");
-        Client.printClients(clients);
+        clientUtils.printClients(clients);
 
         System.out.println("\nОтфильтрованные по полу и отсортированные по возрасту");
-        Client[] filterClientsBySex =
-                individualClientActions.filterClientsBySex((IndividualClient[]) clients, Client.Sex.FEMALE);
-        Client[] sortedClients = individualClientActions.sortClientsByAge((IndividualClient[]) filterClientsBySex);
-        Client.printClients(sortedClients);
+        IndividualClient[] filterClientsBySex =
+                clientUtils.filterClientsByGender((IndividualClient[]) clients, IndividualClient.Gender.FEMALE);
+        IndividualClient[] sortedClients = clientUtils.sortClientsByAge(filterClientsBySex);
+        clientUtils.printClients(sortedClients);
 
-        clients = Client.addDublicates(sortedClients, 5);
+        clients = clientUtils.addDublicates(sortedClients, 5);
         System.out.println("\nДобавлены дубликаты клиентов:");
-        Client.printClients(clients);
+        clientUtils.printClients(clients);
 
-        Client[] clientsWithoutDublicate = Client.deleteDublicates(clients);
+        Client[] clientsWithoutDublicate = clientUtils.deleteDublicates(clients);
         System.out.println("\nУдаление дубликатов клиентов:");
-        Client.printClients(clientsWithoutDublicate);
+        clientUtils.printClients(clientsWithoutDublicate);
     }
 }

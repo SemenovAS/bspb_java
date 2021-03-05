@@ -1,6 +1,6 @@
 package client;
 
-public class LegalClient extends Client {
+public class LegalClient extends Client implements Comparable<LegalClient> {
     private int ogrn;
 
     public int getOgrn() {
@@ -11,17 +11,15 @@ public class LegalClient extends Client {
         this.ogrn = ogrn;
     }
 
-    public static ClientActions clientActions = new ClientActionsImpl();
-
-
-    @Override
-    public Client[] fillClientsArray(TypeClient typeClient, int countClients) {
-        return clientActions.fillClientsArray(typeClient, countClients);
-    }
 
     @Override
     public String toString() {
-        return String.format("Клиент ЮЛ: %s, ОГРН: %d%n",
-                this.getName(), this.ogrn);
+        return String.format("Клиент ЮЛ: %s, ОГРН: %d, eMail: %s%n",
+                this.getName(), this.ogrn, this.getEmail());
+    }
+
+    @Override
+    public int compareTo(LegalClient o) {
+        return Integer.compare(this.ogrn, o.ogrn);
     }
 }

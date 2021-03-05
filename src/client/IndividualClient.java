@@ -8,14 +8,17 @@ public class IndividualClient extends Client implements Comparable<IndividualCli
     private String firstName;
     private String middleName;
     private int age;
-    private Sex sex;
+    private Gender gender;
 
     public String getLastName() {
         return lastName;
     }
 
     public void setLastName(String lastName) {
-        this.lastName = lastName;
+        if (lastName == null || lastName.isBlank()) {
+            throw new RuntimeException("Для клиента не заполнено поле Фамилия");
+        } else
+            this.lastName = lastName;
     }
 
     public String getFirstName() {
@@ -42,27 +45,18 @@ public class IndividualClient extends Client implements Comparable<IndividualCli
         this.age = age;
     }
 
-    public Sex getSex() {
-        return sex;
+    public Gender getGender() {
+        return gender;
     }
 
-    public void setSex(Sex sex) {
-        this.sex = sex;
-    }
-
-
-    public static ClientActions clientActions = new ClientActionsImpl();
-
-
-    @Override
-    public Client[] fillClientsArray(TypeClient typeClient, int countClients) {
-        return clientActions.fillClientsArray(typeClient, countClients);
+    public void setGender(Gender gender) {
+        this.gender = gender;
     }
 
     @Override
     public String toString() {
-        return String.format("Клиент ФЛ: %s %s %s, Пол: %s, Возраст: %d%n",
-                lastName, firstName, middleName, sex, age);
+        return String.format("Клиент ФЛ: %s %s %s, Пол: %s, Возраст: %d, eMail: %s %n",
+                lastName, firstName, middleName, gender, age, getEmail());
     }
 
 
@@ -77,16 +71,14 @@ public class IndividualClient extends Client implements Comparable<IndividualCli
         IndividualClient client = (IndividualClient) obj;
 
         return
-                age == client.age &&
-                        lastName.equals(client.lastName) &&
-                        firstName.equals(client.firstName) &&
-                        middleName.equals(client.middleName) &&
-                        sex == client.sex;
+                this.getName().equals(client.getName())
+                        && this.gender == client.gender
+                        && this.age == client.age;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(lastName, firstName, middleName, age, sex);
+        return Objects.hash(lastName, firstName, middleName, age, gender);
     }
 
     @Override
@@ -95,4 +87,8 @@ public class IndividualClient extends Client implements Comparable<IndividualCli
     }
 
 
+    public enum Gender {
+        MALE,
+        FEMALE
+    }
 }
