@@ -3,6 +3,14 @@ package client;
 public class LegalClient extends Client implements Comparable<LegalClient> {
     private int ogrn;
 
+    public LegalClient() {
+    }
+
+    public LegalClient(String name, int ogrn) {
+        super.setName(name);
+        this.ogrn = ogrn;
+    }
+
     public int getOgrn() {
         return ogrn;
     }

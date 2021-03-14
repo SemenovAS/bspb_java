@@ -10,6 +10,17 @@ public class IndividualClient extends Client implements Comparable<IndividualCli
     private int age;
     private Gender gender;
 
+    public IndividualClient() {
+    }
+
+    public IndividualClient(String lastName, String firstName, String middleName, int age, Gender gender) {
+        this.lastName = lastName;
+        this.firstName = firstName;
+        this.middleName = middleName;
+        this.age = age;
+        this.gender = gender;
+    }
+
     public String getLastName() {
         return lastName;
     }

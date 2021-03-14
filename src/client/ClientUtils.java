@@ -1,11 +1,56 @@
 package client;
 
-import java.util.Arrays;
-import java.util.Locale;
-import java.util.Random;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class ClientUtils extends Client {
     public static final String TEST_DOMAIN = "testmail.ru";
+    public static Random random = new Random();
+    public static int MIN_AGE = 25;
+    public static int MAX_AGE = 60;
+    public static int MIN_OGRN = 100000;
+    public static int MAX_OGRN = 999999;
+
+
+    /**
+     * Заполняет полное имя Клиента ФЛ
+     *
+     * @param client Клиент ФЛ
+     * @return Возвращает полное имя Клиента ФЛ
+     */
+    public String concatIndividualClientName(IndividualClient client) {
+        return client.getLastName() + " " + client.getFirstName() + " " + client.getMiddleName();
+    }
+
+    /**
+     * Создает клиента
+     *
+     * @param typeClient Тип клиента
+     * @param index      Порядковый номер
+     * @return Возвращает созданного клиента
+     */
+    public Client createClient(Class<?> typeClient, int index) {
+        Client client;
+        if (typeClient.isInstance(new IndividualClient())) {
+            client = new IndividualClient(
+                    "LastName" + index,
+                    "FirstName" + index,
+                    "MiddleName" + index,
+                    random.nextInt(MAX_AGE - MIN_AGE + 1) + MIN_AGE,
+                    IndividualClient.Gender.values()[random.nextInt(Gender.values().length)]
+            );
+            client.setName(concatIndividualClientName((IndividualClient) client));
+        } else {
+            client = new LegalClient(
+                    "LegalClient" + index,
+                    random.nextInt(MAX_OGRN - MIN_OGRN + 1) + MIN_OGRN
+            );
+        }
+
+        client.setEmail(createEmail(client));
+
+        return client;
+    }
 
     /**
      * Заполняет и возвращает массив клиентов по типу в заданном количестве
@@ -14,41 +59,41 @@ public class ClientUtils extends Client {
      * @param countClients Количество клиентов
      * @return Заполняет и возвращает массив клиентов по типу в заданном количестве
      */
-    public Client[] fillClientsArray(Class<?> typeClient, int countClients) {
-        Random random = new Random();
-        int min;
-        int max;
-
+    public Client[] fillArrayOfClients(Class<?> typeClient, int countClients) {
         Client[] clients;
+        Client client;
         if (typeClient.isInstance(new IndividualClient())) {
-            min = 25;
-            max = 60;
-
             clients = new IndividualClient[countClients];
             for (int i = 0; i < clients.length; i++) {
-                IndividualClient client = new IndividualClient();
-                client.setLastName("LastName" + i);
-                client.setFirstName("FirstName" + i);
-                client.setMiddleName("MiddleName" + i);
-                client.setGender(IndividualClient.Gender.values()[random.nextInt(Gender.values().length)]);
-                client.setName(client.getLastName() + " " + client.getFirstName() + " " + client.getMiddleName());
-                client.setEmail(createEmail(client));
-                int age = random.nextInt(max - min + 1) + min;
-                client.setAge(age);
+                client = createClient(IndividualClient.class, i);
                 clients[i] = client;
             }
         } else {
-            min = 100000;
-            max = 999999;
-
             clients = new LegalClient[countClients];
             for (int i = 0; i < clients.length; i++) {
-                LegalClient client = new LegalClient();
-                client.setName("LegalClient" + i);
-                client.setOgrn(random.nextInt(max - min + 1) + min);
-                client.setEmail(createEmail(client));
+                client = createClient(LegalClient.class, i);
                 clients[i] = client;
             }
+        }
+
+        return clients;
+    }
+
+
+    public List<Client> fillListOfClients(Class<?> typeClient, int countClients) {
+        List<Client> clients = new ArrayList<>();
+        Client client;
+        if (typeClient.isInstance(new IndividualClient())) {
+            for (int i = 0; i < countClients; i++) {
+                client = createClient(IndividualClient.class, i);
+                clients.add(client);
+            }
+        } else {
+            for (int i = 0; i < countClients; i++) {
+                client = createClient(LegalClient.class, i);
+                clients.add(client);
+            }
+
         }
 
         return clients;
@@ -81,9 +126,20 @@ public class ClientUtils extends Client {
      * @param gender  Пол клиента
      * @return Возвращает отфильтрованный по полу клиента массив ФЛ
      */
-    public IndividualClient[] filterClientsByGenderStream(IndividualClient[] clients, IndividualClient.Gender gender) {
+    public IndividualClient[] filterArrayOfClientsByGenderStream(IndividualClient[] clients,
+                                                                 IndividualClient.Gender gender) {
         return Arrays.stream(clients)
                 .filter(client -> client.getGender().equals(gender)).toArray(IndividualClient[]::new);
+    }
+
+    public List<Client> filterListOfClientsByGender(List<Client> clients,
+                                                    IndividualClient.Gender gender) {
+
+        return clients.stream()
+                .filter(IndividualClient.class::isInstance)
+                .map(IndividualClient.class::cast)
+                .filter(client -> client.getGender().equals(gender))
+                .collect(Collectors.toList());
     }
 
 
@@ -107,6 +163,15 @@ public class ClientUtils extends Client {
         return clients;
     }
 
+    public List<Client> sortClientsByAge(List<Client> clients,
+                                         Comparator<IndividualClient> individualClientComparator) {
+        return clients.stream()
+                .filter(IndividualClient.class::isInstance)
+                .map(IndividualClient.class::cast)
+                .sorted(individualClientComparator)
+                .collect(Collectors.toList());
+    }
+
 
     /**
      * Возвращает фильтрованный по типу клиента массив клиентов
@@ -115,9 +180,16 @@ public class ClientUtils extends Client {
      * @param typeClient Тип клиента
      * @return Возвращает фильтрованный по типу клиента массив клиентов
      */
-    public Client[] filterClientsByType(Client[] clients, Class<?> typeClient) {
-        return Arrays.stream(clients)
-                .filter(typeClient::isInstance).toArray(Client[]::new);
+    public Client[] filterArrayOfClientsByType(Client[] clients, Class<?> typeClient) {
+        return Arrays.stream(clients).filter(typeClient::isInstance).toArray(Client[]::new);
+    }
+
+    public List<Client> filterListOfClientsByType(List<Client> clients, Class<?> typeClient) {
+        return clients.stream()
+                .filter(LegalClient.class::isInstance)
+                .map(LegalClient.class::cast)
+                .filter(typeClient::isInstance)
+                .collect(Collectors.toList());
     }
 
 
@@ -128,7 +200,7 @@ public class ClientUtils extends Client {
      * @param count   Количество дубликатов
      * @return Возвращает массив клиентов с добавленными в него дубликатами в количестве
      */
-    public Client[] addDublicates(Client[] clients, int count) {
+    public Client[] addDublicatesToArrayOfClients(Client[] clients, int count) {
         int index = clients.length;
         clients = Arrays.copyOf(clients, clients.length + count);
 
@@ -139,13 +211,22 @@ public class ClientUtils extends Client {
         return clients;
     }
 
+    public List<Client> addDublicatesToListOfClients(List<Client> clients, int count) {
+        for (int i = 0; i < count; i++) {
+            clients.add(clients.get(0));
+        }
+
+        return clients;
+    }
+
+
     /**
      * Возвращает массив клиентов без дубликатов
      *
      * @param clients Массив клиентов
      * @return Возвращает массив клиентов без дубликатов
      */
-    public Client[] deleteDublicates(Client[] clients) {
+    public Client[] deleteDublicatesFromArrayOfClients(Client[] clients) {
         Client[] clientsWithoutDublicate = new Client[0];
 
         Client client1;
@@ -165,6 +246,10 @@ public class ClientUtils extends Client {
         return clientsWithoutDublicate;
     }
 
+    public List<Client> deleteDublicatesFromListOfClients(List<Client> clients) {
+        return new ArrayList<>(new HashSet<>(clients));
+    }
+
     /**
      * Возвращает наименование емейл клиента
      *
@@ -181,11 +266,16 @@ public class ClientUtils extends Client {
      *
      * @param clients Массив клиентов
      */
-    public void printClients(Client[] clients) {
+    public void printArrayOfClients(Client[] clients) {
         for (Client element : clients) {
             System.out.print(element.toString());
         }
         System.out.printf("Количество клиентов: %d%n", clients.length);
+    }
+
+    public void printListOfClients(List<Client> clients) {
+        System.out.print(clients);
+        System.out.printf("%nКоличество клиентов: %d%n", clients.size());
     }
 
 }
