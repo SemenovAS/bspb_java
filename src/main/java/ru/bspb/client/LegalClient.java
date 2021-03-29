@@ -1,4 +1,4 @@
-package client;
+package ru.bspb.client;
 
 public class LegalClient extends Client implements Comparable<LegalClient> {
     private int ogrn;

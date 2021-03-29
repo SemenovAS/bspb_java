@@ -1,4 +1,4 @@
-package client;
+package ru.bspb.client;
 
 import java.util.*;
 import java.util.stream.Collectors;

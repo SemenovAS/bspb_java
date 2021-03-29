@@ -1,3 +1,5 @@
+package ru.bspb;
+
 public class HelloWorldLib {
 
     public static void printArray(String[] args) {

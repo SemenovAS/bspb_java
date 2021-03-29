@@ -1,3 +1,5 @@
+package ru.bspb;
+
 import java.util.Random;
 
 public class Lesson2 {

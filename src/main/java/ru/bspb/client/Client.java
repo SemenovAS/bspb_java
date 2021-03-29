@@ -1,4 +1,4 @@
-package client;
+package ru.bspb.client;
 
 
 public abstract class Client {

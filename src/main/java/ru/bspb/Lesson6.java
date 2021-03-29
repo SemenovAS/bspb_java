@@ -1,7 +1,9 @@
-import client.Client;
-import client.ClientUtils;
-import client.IndividualClient;
-import client.LegalClient;
+package ru.bspb;
+
+import ru.bspb.client.Client;
+import ru.bspb.client.ClientUtils;
+import ru.bspb.client.IndividualClient;
+import ru.bspb.client.LegalClient;
 
 import java.util.ArrayList;
 import java.util.Comparator;

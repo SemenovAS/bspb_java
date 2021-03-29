@@ -1,4 +1,6 @@
-import client.*;
+package ru.bspb;
+
+import ru.bspb.client.*;
 
 public class Lesson3 {
 
